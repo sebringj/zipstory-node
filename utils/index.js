@@ -1,0 +1,1 @@
+exports.getJSON = require('./getJSON.js').getJSON;
