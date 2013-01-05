@@ -32,7 +32,7 @@ function isAuthorized(req, res) {
 	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     if (ip !== '216.121.124.130') {
         // todo: basic auth w/ ssl
-		res.send(401);
+		res.send(200);
 		res.end(JSON.stringify(req.headers));
         return false;
     }
@@ -124,7 +124,6 @@ app.post('/users/:to/:action', function (req, res) {
 /********** socket.io work ***************/
 io.sockets.on('connection', function(socket) {
     socket.on('init', function(data) {
-		init(data, socket);
 		utils.getJSON({ 
 			host : 'www.zipstory.com', 
 			path : '/handlers/VerifySessionID.ashx?sessionID=' + qs.escape(data.username) 
