@@ -29,14 +29,13 @@ function init(data, socket) {
 }
 
 function isAuthorized(req, res) {
-	var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    if (ip !== '216.121.124.130') {
-        // todo: basic auth w/ ssl
-		res.send(200);
+	var parsedURL = url.parse(req.url,true);
+	//var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	if (process.env.SECRET !== parsedURL.query.SECRET) {
+		res.end('unauthorized');
 		res.end(JSON.stringify(req.headers));
         return false;
     }
-	res.send(200);
     return true;
 }
 
@@ -57,13 +56,15 @@ function cleanup(socketID) {
 
 /********** express.js routes ************/
 app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
     next();
 });
 
 app.get('/', function (req, res) {
-    res.send(200);
+	res.end('');
 });
 
 app.get('/usercount', function(req, res){ 
@@ -100,7 +101,7 @@ app.post('/channels/:channel/:action', function(req, res) {
             }
         }
     }
-    res.send(200);
+	res.end('ok');
 });
 
 app.post('/users/:to/:action', function (req, res) {
@@ -115,9 +116,9 @@ app.post('/users/:to/:action', function (req, res) {
             res.send(200);
             return;
         }
-        res.send(200);
+		res.end('user ok');
     } else {
-        res.send(200);
+		res.end('user not found');
     }
 });
 
