@@ -2,7 +2,7 @@
 A very simple real-time messaging app that was built specifically for zipstory.com 
 but is generic enough to be used in other websites. 
 
-This is an add-on app to a website that you want to have real-time notifications for
+This is an add-on app to a website that you want to have real-time notifications for and leverages socket.io.
 # User-specific Messages
 Allows for user-specific messages based on session ID supplied by the consuming website
 # Channel Messages (Group Messages)
