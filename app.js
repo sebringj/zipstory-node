@@ -1,6 +1,7 @@
+var port = process.env.PORT || 80;
 var express = require('express'),
     app = express(),
-    server = app.listen(80),
+    server = app.listen(port),
     io = require('socket.io').listen(server, { log: false }),
 	utils = require('./utils'),
 	qs = require('querystring'),
