@@ -88,6 +88,13 @@ app.get('/channelcount/:channel', function(req, res){
 	res.end(JSON.stringify({channelcount : count }));
 });
 
+app.get('/signout/:user', function(req, res) {
+	if (!isAuthorized(req, res)) { return; }
+	if (users[req.params.user]) {
+		cleanup(users[req.params.user].socketID);
+	}
+});
+
 app.post('/channels/:channel/:action', function(req, res) {
     var data, i, channel, socket;
     if (!isAuthorized(req, res)) { return; }
