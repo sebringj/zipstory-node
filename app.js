@@ -93,6 +93,7 @@ app.get('/signout/:user', function(req, res) {
 	if (users[req.params.user]) {
 		cleanup(users[req.params.user].socketID);
 	}
+	res.end(JSON.stringify({success : true }));
 });
 
 app.post('/channels/:channel/:action', function(req, res) {
