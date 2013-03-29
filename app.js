@@ -63,6 +63,10 @@ app.get('/', function (req, res) {
 	res.end('');
 });
 
+app.get('/referer', function(req, res){
+	res.end(req.headers['referer']);
+});
+
 app.get('/getimages', function(req, res) {
 	var urlParam = url.parse(req.url,true).query.url,
 		jsdom = require('jsdom'),
@@ -84,13 +88,39 @@ app.get('/getimages', function(req, res) {
 				});
 				return;
 			}
-			var $ = window.jQuery, images = [], hash = {};
-			$('img').each(function(){
-				if (!hash[$(this).attr('src')]) {
-					images.push($(this).attr('src'));
-					hash[$(this).attr('src')] = true;
+			function extractImageURL(src, arr) {
+				var i = 0, len = arr.length, index, token, tl;
+				for(;i < len; i++) {
+					token = '.' + arr[i];
+					tl = token.length;
+					index = src.indexOf(token);
+					if (index > -1) {
+						return src.substr(0,index+tl);
+					}
+				}
+				return src;
+			}
+			var $ = window.jQuery, images = [], hash = {}, src,
+			imgArr = ['jpeg','jpg','gif','png','svg','bmp'], 
+			urlParsed = url.parse(urlParam);
+			
+			$('img').each(function() {
+				src = extractImageURL($(this).attr('src'),imgArr);
+				if (/^\/\//.test(src)) {
+					src = 'http:' + src;
+				} else if (/^http(s)?:\/\//.test(src)) {
+					// leave as is
+				} else if (/:\/\//.test(src)) {
+					return;
+				} else {
+					src = 'http://' + urlParsed.host + url.resolve(urlParsed.pathname, src);
+				}
+				if (!hash[src]) {
+					images.push(src);
+					hash[src] = true;
 				}
 			});
+			
 			res.jsonp({
 				success : true,
 				images : images
