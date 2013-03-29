@@ -6,7 +6,7 @@ var express = require('express'),
 	utils = require('./utils'),
 	qs = require('querystring'),
 	url = require('url');
-    
+	
 app.use(express.bodyParser());
 
 var users = {};
@@ -68,9 +68,10 @@ app.get('/getimages', function(req, res) {
 		jsdom = require('jsdom'),
 		referer = req.headers['referer'];
 		
-	if (!referer || url.parse(referer).hostname !== 'www.zipstory.com') {
+	/*if (!referer || url.parse(referer).hostname !== 'www.zipstory.com') {
 		res.end('bad referer');
-	}
+		return;
+	}*/
 		
 	jsdom.env({
 		html: urlParam,
