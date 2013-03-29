@@ -65,10 +65,12 @@ app.get('/', function (req, res) {
 
 app.get('/getimages', function(req, res) {
 	var urlParam = url.parse(req.url,true).query.url,
-		jsdom = require('jsdom');
+		jsdom = require('jsdom'),
+		referer = req.headers['referer'];
 		
-	// todo: block by referral
-	//console.log(req.headers);
+	if (!referer || url.parse(referer).hostname !== 'www.zipstory.com') {
+		res.end('bad referer');
+	}
 		
 	jsdom.env({
 		html: urlParam,
