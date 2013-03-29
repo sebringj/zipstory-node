@@ -55,25 +55,42 @@ function cleanup(socketID) {
     delete sockets[socketID];
 }
 
-/********** express.js routes ************/
-app.all('/*', function(req, res, next) {
+app.get('/', function (req, res) {
 	res.writeHead(200, {
 		"Access-Control-Allow-Origin" : "*",
 		"Access-Control-Allow-Headers": "X-Requested-With"
 	});
-    next();
-});
-
-app.get('/', function (req, res) {
 	res.end('');
 });
 
 app.get('/getimages', function(req, res) {
-	res.end(JSON.stringify([
-		'http://i2.cdn.turner.com/cnn/dam/assets/130319193245-malala-school-c1-main.jpg',
-		'http://i2.cdn.turner.com/cnn/dam/assets/130319193245-malala-school-c1-main.jpg',
-		'http://www.gannett-cdn.com/media/USATODAY/USATODAY/2013/03/23/usp-ncaa-basketball_-southern-illinois-at-wichita-4_3_rx513_c680x510.jpg?6c3c24a06b2ec04d15c066f5e9a76a10a837ffd4'
-	]));
+	var urlParam = url.parse(req.url,true).query.url,
+		jsdom = require('jsdom');
+		
+	// todo: block by referral
+	//console.log(req.headers);
+		
+	jsdom.env({
+		html: urlParam,
+		scripts: ['http://code.jquery.com/jquery.js'],
+		done: function (errors, window) {
+			if (errors && errors.length) {
+				res.jsonp({
+					success : false,
+					message : 'badurl'
+				});
+				return;
+			}
+			var $ = window.jQuery, images = [];
+			$('img').each(function(){
+				images.push($(this).attr('src'));
+			});
+			res.jsonp({
+				success : true,
+				images : images
+			});	
+		}
+	});
 });
 
 app.get('/usercount', function(req, res){ 
@@ -83,6 +100,10 @@ app.get('/usercount', function(req, res){
            ++count;
         }
     }
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
     res.end(JSON.stringify({usercount : count }));
 });
 
@@ -93,6 +114,10 @@ app.get('/channelcount/:channel', function(req, res){
 			++count;
 		}
 	}
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
 	res.end(JSON.stringify({channelcount : count }));
 });
 
@@ -101,6 +126,10 @@ app.get('/signout/:user', function(req, res) {
 	if (users[req.params.user]) {
 		cleanup(users[req.params.user].socketID);
 	}
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
 	res.end(JSON.stringify({success : true }));
 });
 
@@ -118,12 +147,20 @@ app.post('/channels/:channel/:action', function(req, res) {
             }
         }
     }
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
 	res.end('ok');
 });
 
 app.post('/users/:to/:action', function (req, res) {
     var data;
     if (!isAuthorized(req, res)) { return; }
+	res.writeHead(200, {
+		"Access-Control-Allow-Origin" : "*",
+		"Access-Control-Allow-Headers": "X-Requested-With"
+	});
     if (users[req.params.to]) {
         data = users[req.params.to];
         if (data.socket) {
