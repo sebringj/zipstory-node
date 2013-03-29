@@ -69,10 +69,10 @@ app.get('/', function (req, res) {
 });
 
 app.get('/getimages', function(req, res) {
-	res.send([
+	res.end(JSON.stringify([
 		'http://i2.cdn.turner.com/cnn/dam/assets/130319193245-malala-school-c1-main.jpg',
 		'http://www.gannett-cdn.com/media/USATODAY/USATODAY/2013/03/23/usp-ncaa-basketball_-southern-illinois-at-wichita-4_3_rx513_c680x510.jpg?6c3c24a06b2ec04d15c066f5e9a76a10a837ffd4'
-	]);
+	]));
 });
 
 app.get('/usercount', function(req, res){ 
