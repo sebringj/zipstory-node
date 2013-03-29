@@ -80,13 +80,16 @@ app.get('/getimages', function(req, res) {
 			if (errors && errors.length) {
 				res.jsonp({
 					success : false,
-					message : 'badurl'
+					message : urlParam
 				});
 				return;
 			}
-			var $ = window.jQuery, images = [];
+			var $ = window.jQuery, images = [], hash = {};
 			$('img').each(function(){
-				images.push($(this).attr('src'));
+				if (!hash[$(this).attr('src')]) {
+					images.push($(this).attr('src'));
+					hash[$(this).attr('src')] = true;
+				}
 			});
 			res.jsonp({
 				success : true,
