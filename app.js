@@ -70,12 +70,17 @@ app.get('/referer', function(req, res){
 app.get('/getimages', function(req, res) {
 	var urlParam = url.parse(req.url,true).query.url,
 		jsdom = require('jsdom'),
-		referer = req.headers['referer'];
+		referer = req.headers['referer'],
+		refererSplit = [];
+	
+	if (referer) {
+		refererSplit = url.parse(referer.toLowerCase()).hostname.split('.');
+	}
 		
-	/*if (!referer || url.parse(referer).hostname !== 'www.zipstory.com') {
+	if (!referer || refererSplit.length !== 3 || refererSplit[1] !== 'zipstory' || refererSplit[2] !== 'com') {
 		res.end('bad referer');
 		return;
-	}*/
+	}
 		
 	jsdom.env({
 		html: urlParam,
@@ -100,6 +105,7 @@ app.get('/getimages', function(req, res) {
 				}
 				return src;
 			}
+			
 			var $ = window.jQuery, images = [], hash = {}, src,
 			imgArr = ['jpeg','jpg','gif','png','svg','bmp'], 
 			urlParsed = url.parse(urlParam);
