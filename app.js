@@ -55,11 +55,19 @@ function cleanup(socketID) {
     delete sockets[socketID];
 }
 
-app.get('/', function (req, res) {
+app.all('*', function(req, res, next) {
+	if (req.path.indexOf('/getimages') > -1) {
+		next();
+		return;
+	}
 	res.writeHead(200, {
 		"Access-Control-Allow-Origin" : "*",
 		"Access-Control-Allow-Headers": "X-Requested-With"
 	});
+	next();
+});
+
+app.get('/', function (req, res) {
 	res.end('');
 });
 
@@ -142,10 +150,6 @@ app.get('/usercount', function(req, res){
            ++count;
         }
     }
-	res.writeHead(200, {
-		"Access-Control-Allow-Origin" : "*",
-		"Access-Control-Allow-Headers": "X-Requested-With"
-	});
     res.end(JSON.stringify({usercount : count }));
 });
 
@@ -156,10 +160,6 @@ app.get('/channelcount/:channel', function(req, res){
 			++count;
 		}
 	}
-	res.writeHead(200, {
-		"Access-Control-Allow-Origin" : "*",
-		"Access-Control-Allow-Headers": "X-Requested-With"
-	});
 	res.end(JSON.stringify({channelcount : count }));
 });
 
@@ -168,10 +168,6 @@ app.get('/signout/:user', function(req, res) {
 	if (users[req.params.user]) {
 		cleanup(users[req.params.user].socketID);
 	}
-	res.writeHead(200, {
-		"Access-Control-Allow-Origin" : "*",
-		"Access-Control-Allow-Headers": "X-Requested-With"
-	});
 	res.end(JSON.stringify({success : true }));
 });
 
@@ -189,20 +185,12 @@ app.post('/channels/:channel/:action', function(req, res) {
             }
         }
     }
-	res.writeHead(200, {
-		"Access-Control-Allow-Origin" : "*",
-		"Access-Control-Allow-Headers": "X-Requested-With"
-	});
 	res.end('ok');
 });
 
 app.post('/users/:to/:action', function (req, res) {
     var data;
     if (!isAuthorized(req, res)) { return; }
-	res.writeHead(200, {
-		"Access-Control-Allow-Origin" : "*",
-		"Access-Control-Allow-Headers": "X-Requested-With"
-	});
     if (users[req.params.to]) {
         data = users[req.params.to];
         if (data.socket) {
